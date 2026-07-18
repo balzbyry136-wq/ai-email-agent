@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>مكتب البريد — Mail Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDEEF0;
+    --paper-raised:#F7F8F9;
+    --ink:#1B2430;
+    --ink-soft:#5B6470;
+    --teal:#2F6F6B;
+    --teal-dark:#1E4E4B;
+    --amber:#C97A0C;
+    --coral:#C1493B;
+    --line:#D8DADE;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    min-height:100vh;
+  }
+  .display{font-family:'Space Grotesk', sans-serif;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  header{
+    padding:28px 32px 20px;
+    border-bottom:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:flex-end;
+    flex-wrap:wrap; gap:16px;
+  }
+  header h1{
+    font-size:26px; font-weight:700; margin:0; letter-spacing:-0.01em;
+  }
+  header .tag{
+    font-size:12px; color:var(--ink-soft); margin-top:4px;
+  }
+  .connect-bar{
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+  }
+  input[type=text]{
+    padding:9px 12px; border:1px solid var(--line); border-radius:6px;
+    font-family:inherit; font-size:13px; background:var(--paper-raised);
+    min-width:220px;
+  }
+  button{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600; font-size:13px;
+    padding:9px 16px; border-radius:6px; border:1px solid transparent;
+    cursor:pointer; transition:transform .1s ease, background .15s ease;
+  }
+  button:active{transform:scale(0.97);}
+  .btn-primary{background:var(--teal); color:#fff;}
+  .btn-primary:hover{background:var(--teal-dark);}
+  .btn-ghost{background:transparent; border-color:var(--line); color:var(--ink);}
+  .btn-ghost:hover{background:var(--paper-raised);}
+  .btn-approve{background:var(--teal); color:#fff;}
+  .btn-reject{background:transparent; border-color:var(--coral); color:var(--coral);}
+
+  main{max-width:920px; margin:0 auto; padding:28px 32px 80px;}
+  .status-line{
+    font-size:12px; color:var(--ink-soft); margin-bottom:18px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .dot{width:7px; height:7px; border-radius:50%; background:var(--ink-soft); display:inline-block;}
+  .dot.on{background:var(--teal);}
+
+  .card{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:10px;
+    margin-bottom:14px;
+    overflow:hidden;
+    position:relative;
+    display:flex;
+  }
+  .stripe{width:5px; flex-shrink:0;}
+  .stripe.urgent{background:var(--coral);}
+  .stripe.needs_reply{background:var(--amber);}
+  .stripe.normal{background:var(--teal);}
+  .stripe.spam{background:var(--ink-soft);}
+  .stripe.notification_only{background:var(--line);}
+
+  .card-body{padding:16px 18px; flex:1; min-width:0;}
+  .card-top{display:flex; justify-content:space-between; gap:12px; align-items:flex-start;}
+  .subject{font-weight:600; font-size:15px; margin:0 0 4px;}
+  .sender{font-size:12px; color:var(--ink-soft); margin:0;}
+
+  .stamp{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:10px; font-weight:700; letter-spacing:.04em;
+    padding:4px 9px; border-radius:100px; border:1.5px dashed currentColor;
+    white-space:nowrap; text-transform:uppercase;
+  }
+  .stamp.urgent{color:var(--coral);}
+  .stamp.needs_reply{color:var(--amber);}
+  .stamp.normal{color:var(--teal);}
+  .stamp.spam{color:var(--ink-soft);}
+  .stamp.notification_only{color:var(--ink-soft);}
+
+  .summary{font-size:13px; color:var(--ink); margin:10px 0 0; line-height:1.6;}
+
+  .action-items{margin-top:10px; padding-right:0;}
+  .action-items li{font-size:12.5px; color:var(--ink-soft); margin-bottom:3px;}
+
+  .reply-box{
+    margin-top:14px; padding:12px 14px; background:var(--paper);
+    border:1px solid var(--line); border-radius:8px;
+  }
+  .reply-box .label{font-size:11px; color:var(--ink-soft); margin-bottom:6px; text-transform:uppercase; letter-spacing:.04em;}
+  .reply-box textarea{
+    width:100%; min-height:80px; border:1px solid var(--line); border-radius:6px;
+    padding:8px 10px; font-family:inherit; font-size:13px; resize:vertical;
+    background:#fff;
+  }
+  .reply-actions{display:flex; gap:8px; margin-top:8px;}
+
+  .empty{
+    text-align:center; padding:60px 20px; color:var(--ink-soft);
+  }
+  .empty .display{font-size:20px; color:var(--ink); margin-bottom:6px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1 class="display">مكتب البريد</h1>
+    <div class="tag mono">AI EMAIL AGENT — human approves every send</div>
+  </div>
+  <div class="connect-bar">
+    <input id="userEmail" type="text" placeholder="بريدك الإلكتروني (بعد تسجيل الدخول)" />
+    <button class="btn-ghost" onclick="startLogin()">تسجيل دخول Google</button>
+    <button class="btn-primary" onclick="syncEmails()">مزامنة الآن</button>
+  </div>
+</header>
+
+<main>
+  <div class="status-line">
+    <span class="dot" id="statusDot"></span>
+    <span id="statusText">غير متصل بالسيرفر بعد</span>
+  </div>
+  <div id="emailList"></div>
+</main>
+
+<script>
+const API_BASE = "http://localhost:8000"; // عدّلها لو شغّلت السيرفر على عنوان مختلف
+
+const CATEGORY_LABELS = {
+  urgent: "عاجل",
+  needs_reply: "يحتاج رد",
+  normal: "عادي",
+  spam: "سبام",
+  notification_only: "إشعار فقط"
+};
+
+function getUserEmail(){
+  return document.getElementById('userEmail').value.trim();
+}
+
+async function startLogin(){
+  try{
+    const res = await fetch(`${API_BASE}/auth/login`);
+    const data = await res.json();
+    window.open(data.auth_url, '_blank');
+  }catch(e){
+    setStatus(false, "تعذر الوصول للسيرفر — تأكد إنه شغّال على " + API_BASE);
+  }
+}
+
+async function syncEmails(){
+  const email = getUserEmail();
+  if(!email){ alert("حط بريدك الإلكتروني أول (نفس اللي سجلت فيه دخول)"); return; }
+  setStatus(true, "جاري المزامنة...");
+  try{
+    const res = await fetch(`${API_BASE}/emails/sync?user_email=${encodeURIComponent(email)}`, { method: 'POST' });
+    if(!res.ok) throw new Error(await res.text());
+    await loadEmails();
+  }catch(e){
+    setStatus(false, "فشلت المزامنة: " + e.message);
+  }
+}
+
+async function loadEmails(){
+  const email = getUserEmail();
+  if(!email) return;
+  try{
+    const res = await fetch(`${API_BASE}/emails?user_email=${encodeURIComponent(email)}`);
+    if(!res.ok) throw new Error(await res.text());
+    const emails = await res.json();
+    renderEmails(emails);
+    setStatus(true, `متصل — ${emails.length} إيميل`);
+  }catch(e){
+    setStatus(false, "تعذر تحميل الإيميلات: " + e.message);
+  }
+}
+
+function setStatus(on, text){
+  document.getElementById('statusDot').classList.toggle('on', on);
+  document.getElementById('statusText').textContent = text;
+}
+
+function renderEmails(emails){
+  const list = document.getElementById('emailList');
+  if(!emails.length){
+    list.innerHTML = `<div class="empty"><div class="display">ما فيه إيميلات بعد</div>سجّل دخول ثم اضغط "مزامنة الآن"</div>`;
+    return;
+  }
+  list.innerHTML = emails.map(renderCard).join('');
+}
+
+function renderCard(e){
+  const cat = e.category || 'normal';
+  const label = CATEGORY_LABELS[cat] || cat;
+
+  const actionItems = (e.action_items || []).map(a => `<li>${escapeHtml(a.description)}</li>`).join('');
+  const actionItemsBlock = actionItems ? `<ul class="action-items">${actionItems}</ul>` : '';
+
+  let replyBlock = '';
+  if(e.draft_reply && e.draft_reply.status === 'pending_review'){
+    replyBlock = `
+      <div class="reply-box">
+        <div class="label">رد مقترح — بانتظار موافقتك</div>
+        <textarea id="reply-${e.id}">${escapeHtml(e.draft_reply.content)}</textarea>
+        <div class="reply-actions">
+          <button class="btn-approve" onclick="approveReply(${e.draft_reply.id}, ${e.id})">وافق وأرسل</button>
+          <button class="btn-reject" onclick="rejectReply(${e.draft_reply.id})">رفض</button>
+        </div>
+      </div>`;
+  } else if(e.draft_reply && e.draft_reply.status === 'sent'){
+    replyBlock = `<div class="reply-box"><div class="label">تم الإرسال ✓</div></div>`;
+  }
+
+  return `
+    <div class="card" id="card-${e.id}">
+      <div class="stripe ${cat}"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div>
+            <p class="subject">${escapeHtml(e.subject)}</p>
+            <p class="sender mono">${escapeHtml(e.sender)}</p>
+          </div>
+          <span class="stamp ${cat}">${label}</span>
+        </div>
+        ${e.summary ? `<p class="summary">${escapeHtml(e.summary)}</p>` : ''}
+        ${actionItemsBlock}
+        ${replyBlock}
+      </div>
+    </div>`;
+}
+
+async function approveReply(draftId, emailId){
+  const email = getUserEmail();
+  const textarea = document.getElementById(`reply-${emailId}`);
+  const edited = textarea ? textarea.value : null;
+  try{
+    const res = await fetch(`${API_BASE}/replies/approve?user_email=${encodeURIComponent(email)}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ draft_id: draftId, edited_content: edited })
+    });
+    if(!res.ok) throw new Error(await res.text());
+    await loadEmails();
+  }catch(e){
+    alert("فشل الإرسال: " + e.message);
+  }
+}
+
+async function rejectReply(draftId){
+  try{
+    await fetch(`${API_BASE}/replies/reject?draft_id=${draftId}`, { method: 'POST' });
+    await loadEmails();
+  }catch(e){
+    alert("فشل الرفض: " + e.message);
+  }
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+// لو رجعنا من صفحة تسجيل الدخول
+if(new URLSearchParams(window.location.search).get('connected')){
+  setStatus(true, "تم تسجيل الدخول — حط بريدك واضغط مزامنة");
+}
+</script>
+
+</body>
+</html>
